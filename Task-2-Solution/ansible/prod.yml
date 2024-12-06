@@ -2,13 +2,24 @@
   hosts: _prod_server
   become: yes
   remote_user: ec2-user
+  vars:
+    ansible_python_interpreter: /usr/libexec/platform-python # Python yorumlayıcıyı sabitle
 
   tasks:
+    - name: Gather only necessary facts
+      ansible.builtin.setup:
+        gather_subset:
+          - "!all"  # Tüm bilgileri toplama
+          - "os"    # Sadece işletim sistemi bilgilerini topla
+
     - name: Update yum package index (RedHat/CentOS)
       yum:
         name: '*'
         state: latest
+        update_cache: yes # Cache güncellemeyi açık tut
       when: ansible_os_family == "RedHat"
+      async: 60 # Görevi arka planda çalıştır
+      poll: 0   # Beklemeden bir sonraki göreve geç
 
     - name: Install Apache (RedHat/CentOS)
       yum:
