@@ -1,7 +1,7 @@
 - name: Setup Web Servers Based on Environment
   hosts: _prod_server
   become: yes
-  remote_user: root
+  remote_user: ec2-user
 
   tasks:
     - name: Update yum package index (RedHat/CentOS)
