@@ -4,24 +4,10 @@
   remote_user: ec2-user
 
   tasks:
-    - name: Ensure Python 3 is installed
-      block:
-        - name: Check if Python 3 is available
-          ansible.builtin.shell: "which python3"
-          register: python3_check
-          failed_when: false
-
-        - name: Install Python 3 if not installed
-          yum:
-            name: python3
-            state: present
-          when: python3_check.rc != 0
-
     - name: Update yum package index (RedHat/CentOS)
       yum:
         name: '*'
         state: latest
-        update_cache: yes
       when: ansible_os_family == "RedHat"
 
     - name: Install Apache (RedHat/CentOS)
