@@ -1,0 +1,40 @@
+- name: Setup Web Servers Based on Environment
+  hosts: _prod_server
+  become: yes
+  remote_user: root
+
+  tasks:
+    - name: Update yum package index (RedHat/CentOS)
+      yum:
+        name: '*'
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    - name: Install Apache (RedHat/CentOS)
+      yum:
+        name: httpd
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Create index.html with message
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        content: |
+          <html>
+          <head><title>Techpro Education AWS-DevOps Team</title></head>
+          <body>
+            <h1>Merhaba Arkadaşlar, Ben Melis</h1>
+            <p>Techpro Education AWS-DevOps Team olarak Production ortamı başarıyla yapılandırılmıştır...</p>
+          </body>
+          </html>
+        owner: apache
+        group: apache
+        mode: '0644'
+      when: ansible_os_family == "RedHat"
+
+    - name: Start and enable Apache service (RedHat/CentOS)
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+      when: ansible_os_family == "RedHat"
